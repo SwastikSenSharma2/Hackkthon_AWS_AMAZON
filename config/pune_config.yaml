@@ -146,16 +146,16 @@ api_port: 8000
 stream_chunk_agents: 50          # agents pushed per SSE chunk
 
 # ----------------------------------------------------------
-# Data Paths  (relative to project root  ACO_Traffic/)
+# Data Paths  (AWS S3 URIs or relative local paths)
 # ----------------------------------------------------------
 data:
-  road_network:      "DATA/drive-download-20260919T123544Z-1-001/pune_road_network.txt"
-  traffic_clean:     "DATA/drive-download-20260919T123544Z-1-001/pune_traffic_clean.csv"
-  train_dataset:     "DATA/drive-download-20260919T123544Z-1-001/train_dataset.csv"
-  transit_routes:    "DATA/drive-download-20260919T123544Z-1-001/pune_transit_routes.csv"
-  transit_stops:     "DATA/drive-download-20260919T123544Z-1-001/pune_transit_stops.json"
-  intersection_nodes:"DATA/drive-download-20260919T123544Z-1-001/intersection_node_map.json"
-  modal_share:       "DATA/692b7880-1667-4e5e-90a5-df54fa0aa582.csv"
+  road_network:      "s3://pune-aco-data-2026/pune_road_network.txt"
+  traffic_clean:     "s3://pune-aco-data-2026/pune_traffic_clean.csv"
+  train_dataset:     "s3://pune-aco-data-2026/train_dataset.csv"
+  transit_routes:    "s3://pune-aco-data-2026/pune_transit_routes.csv"
+  transit_stops:     "s3://pune-aco-data-2026/pune_transit_stops.json"
+  intersection_nodes:"s3://pune-aco-data-2026/intersection_node_map.json"
+  modal_share:       "s3://pune-aco-data-2026/692b7880-1667-4e5e-90a5-df54fa0aa582.csv"
 
 # ----------------------------------------------------------
 # Output Paths

@@ -37,6 +37,11 @@ import networkx as nx
 import numpy as np
 import yaml
 
+try:
+    from pipeline.s3_utils import load_json_from_path_or_s3, load_csv_from_path_or_s3
+except ImportError:
+    from s3_utils import load_json_from_path_or_s3, load_csv_from_path_or_s3
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s  [%(levelname)s]  %(message)s",
@@ -159,10 +164,9 @@ class TransitAnchorer:
 
     # ------------------------------------------------------------------
     def _load_stops(self) -> list[dict]:
-        path = self.root / self.cfg["data"]["transit_stops"]
+        path = self.cfg["data"]["transit_stops"]
         log.info("Loading transit stops from %s …", path)
-        with open(path) as fh:
-            geojson = json.load(fh)
+        geojson = load_json_from_path_or_s3(path, root_dir=self.root)
         stops = []
         for feature in geojson.get("features", []):
             props = feature.get("properties", {})
@@ -180,14 +184,10 @@ class TransitAnchorer:
 
     # ------------------------------------------------------------------
     def _load_routes(self) -> list[dict]:
-        import csv
-        path = self.root / self.cfg["data"]["transit_routes"]
+        path = self.cfg["data"]["transit_routes"]
         log.info("Loading transit routes from %s …", path)
-        routes = []
-        with open(path, newline="", encoding="utf-8") as fh:
-            reader = csv.DictReader(fh)
-            for row in reader:
-                routes.append(dict(row))
+        df = load_csv_from_path_or_s3(path, root_dir=self.root, dtype=str)
+        routes = df.to_dict(orient="records")
         log.info("Loaded %d transit routes.", len(routes))
         return routes
 

@@ -27,6 +27,14 @@ from pathlib import Path
 
 import yaml
 
+try:
+    from pipeline.s3_utils import load_json_from_path_or_s3
+except ImportError:
+    try:
+        from s3_utils import load_json_from_path_or_s3
+    except ImportError:
+        load_json_from_path_or_s3 = None
+
 log = logging.getLogger(__name__)
 logging.basicConfig(
     level=logging.INFO,
@@ -200,12 +208,19 @@ class MapRenderer:
         transit_layer.add_to(m)
 
         # ---- Layer 4: Known intersection markers ---------------------
-        intersection_map_path = (
-            self.root / self.cfg["data"]["intersection_nodes"]
-        )
-        if intersection_map_path.exists():
-            with open(intersection_map_path) as fh:
-                imap = json.load(fh)
+        intersection_map_path = self.cfg["data"].get("intersection_nodes")
+        imap = None
+        if intersection_map_path:
+            try:
+                if load_json_from_path_or_s3 is not None:
+                    imap = load_json_from_path_or_s3(intersection_map_path, root_dir=self.root)
+                else:
+                    with open(self.root / intersection_map_path) as fh:
+                        imap = json.load(fh)
+            except Exception as exc:
+                log.warning("Could not load intersection nodes (%s): %s", intersection_map_path, exc)
+
+        if imap:
             marker_layer = folium.FeatureGroup(name="CCTV Intersections", show=True)
             for name, node_id in imap.items():
                 if node_id in G.nodes:

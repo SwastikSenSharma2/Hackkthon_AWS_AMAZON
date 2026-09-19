@@ -31,6 +31,11 @@ import numpy as np
 import pandas as pd
 import yaml
 
+try:
+    from pipeline.s3_utils import load_csv_from_path_or_s3, load_json_from_path_or_s3
+except ImportError:
+    from s3_utils import load_csv_from_path_or_s3, load_json_from_path_or_s3
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s  [%(levelname)s]  %(message)s",
@@ -77,9 +82,9 @@ class TrafficLoader:
 
     # ------------------------------------------------------------------
     def _load_raw(self) -> pd.DataFrame:
-        path = self.root / self.cfg["data"]["traffic_clean"]
+        path = self.cfg["data"]["traffic_clean"]
         log.info("Loading traffic data from %s …", path)
-        df = pd.read_csv(path, parse_dates=["bucket"])
+        df = load_csv_from_path_or_s3(path, root_dir=self.root, parse_dates=["bucket"])
         log.info("Loaded %d rows across %d time buckets.", len(df), df["bucket"].nunique())
         return df
 
@@ -235,9 +240,8 @@ class TrafficLoader:
         df = self._compute_congestion_score(df)
 
         # Load intersection → node ID mapping
-        node_map_path = self.root / self.cfg["data"]["intersection_nodes"]
-        with open(node_map_path) as fh:
-            node_map: dict[str, int] = json.load(fh)
+        node_map_path = self.cfg["data"]["intersection_nodes"]
+        node_map: dict[str, int] = load_json_from_path_or_s3(node_map_path, root_dir=self.root)
         log.info("Intersection node map loaded: %s", list(node_map.keys()))
 
         diurnal_curve = self._build_diurnal_curve(df)

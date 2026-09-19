@@ -34,6 +34,11 @@ import networkx as nx
 import numpy as np
 import yaml
 
+try:
+    from pipeline.s3_utils import load_graphml_from_path_or_s3
+except ImportError:
+    from s3_utils import load_graphml_from_path_or_s3
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s  [%(levelname)s]  %(message)s",
@@ -150,9 +155,9 @@ class GraphBuilder:
 
     # ------------------------------------------------------------------
     def load_graphml(self) -> nx.DiGraph:
-        network_path = self.project_root / self.cfg["data"]["road_network"]
+        network_path = self.cfg["data"]["road_network"]
         log.info("Reading GraphML from %s …", network_path)
-        G: nx.DiGraph = nx.read_graphml(str(network_path))
+        G: nx.DiGraph = load_graphml_from_path_or_s3(network_path, root_dir=self.project_root)
         log.info("Raw graph: %d nodes, %d edges", G.number_of_nodes(), G.number_of_edges())
         return G
 

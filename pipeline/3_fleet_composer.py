@@ -21,12 +21,16 @@ from __future__ import annotations
 
 import argparse
 import json
-import logging
 import sys
 from pathlib import Path
 
 import pandas as pd
 import yaml
+
+try:
+    from pipeline.s3_utils import load_csv_from_path_or_s3
+except ImportError:
+    from s3_utils import load_csv_from_path_or_s3
 
 logging.basicConfig(
     level=logging.INFO,
@@ -87,9 +91,9 @@ class FleetComposer:
 
     # ------------------------------------------------------------------
     def _load_modal_share(self) -> pd.DataFrame:
-        path = self.root / self.cfg["data"]["modal_share"]
+        path = self.cfg["data"]["modal_share"]
         log.info("Loading modal share from %s …", path)
-        df = pd.read_csv(path)
+        df = load_csv_from_path_or_s3(path, root_dir=self.root)
         log.info("Columns: %s", df.columns.tolist())
         log.info("Vehicle types: %s", df["Type of Vehicle"].tolist())
         return df
