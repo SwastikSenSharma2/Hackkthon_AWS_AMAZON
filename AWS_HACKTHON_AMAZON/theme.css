@@ -1,0 +1,76 @@
+/* 
+ * AWS_HACKTHON_AMAZON/theme.css
+ * FLOWOPT Design System — Clean Luminous Theme (No Emojis)
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  --font-heading: 'Plus Jakarta Sans', sans-serif;
+  --font-body: 'Inter', sans-serif;
+
+  /* Brand Palette matching Reference Design */
+  --color-primary-dark: #0f172a;
+  --color-accent-teal: #0d9488;
+  --color-accent-blue: #0284c7;
+  --color-accent-purple: #7c3aed;
+  --color-accent-indigo: #6366f1;
+
+  /* Surface Glows */
+  --bg-luminous: radial-gradient(circle at 12% 18%, rgba(186, 230, 253, 0.55) 0%, transparent 45%),
+                 radial-gradient(circle at 88% 18%, rgba(221, 214, 254, 0.6) 0%, transparent 50%),
+                 radial-gradient(circle at 50% 85%, rgba(224, 242, 254, 0.35) 0%, transparent 55%),
+                 #f8fafc;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  background: var(--bg-luminous);
+  color: #0f172a;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+.luminous-bg {
+  background: var(--bg-luminous);
+}
+
+.luminous-card {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(226, 232, 240, 0.85);
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05), 0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+}
+
+.btn-primary-gradient {
+  background: linear-gradient(135deg, #0d9488 0%, #0284c7 100%);
+  color: #ffffff;
+  border-radius: 9999px;
+  font-weight: 600;
+  box-shadow: 0 4px 14px 0 rgba(13, 148, 136, 0.25);
+  transition: all 0.2s ease;
+}
+
+.btn-primary-gradient:hover {
+  opacity: 0.95;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px 0 rgba(13, 148, 136, 0.35);
+}
+
+.btn-secondary-white {
+  background: #ffffff;
+  color: #0f172a;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: 9999px;
+  font-weight: 600;
+  box-shadow: 0 2px 8px 0 rgba(15, 23, 42, 0.04);
+  transition: all 0.2s ease;
+}
+
+.btn-secondary-white:hover {
+  background: #f8fafc;
+  border-color: rgba(203, 213, 225, 0.9);
+  transform: translateY(-1px);
+}
