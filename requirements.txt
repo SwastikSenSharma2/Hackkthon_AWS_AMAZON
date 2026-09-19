@@ -1,0 +1,32 @@
+# ============================================================
+#  ACO Urban Traffic Routing Engine — Python Dependencies
+#  Install:  pip install -r requirements.txt
+#  Python >= 3.10 recommended
+# ============================================================
+
+# Core data & graph
+networkx>=3.0
+numpy>=1.24
+pandas>=2.0
+scipy>=1.10
+
+# Config parsing
+pyyaml>=6.0
+
+# Progress bars
+tqdm>=4.65
+
+# Visualisation (local map rendering)
+folium>=0.14
+matplotlib>=3.7
+
+# API layer
+fastapi>=0.110.0
+uvicorn[standard]>=0.29.0
+sse-starlette>=1.8.0    # Server-Sent Events for /stream endpoints
+
+# Optional: shapely for geometry helpers (turn bearing calculation)
+shapely>=2.0
+
+# Dev / testing
+pytest>=7.4

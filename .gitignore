@@ -1,0 +1,90 @@
+# ==========================================
+# Data & Datasets (Confidential / Large Files)
+# ==========================================
+DATA/
+data/
+*.zip
+*.tar.gz
+*.7z
+*.csv
+*.txt
+!requirements.txt
+*.json
+*.geojson
+*.pkl
+*.parquet
+
+# Keep config JSON/YAML files
+!config/**/*.json
+!config/**/*.yaml
+!config/**/*.yml
+!package.json
+!tsconfig.json
+
+# ==========================================
+# Generated Outputs & Artifacts
+# ==========================================
+processed/
+output/*
+!output/*.py
+!output/results_writer.py
+!output/.gitkeep
+
+# ==========================================
+# Secrets, Credentials & Environment
+# ==========================================
+.env
+*.env
+.env.*
+secrets.yaml
+secrets.json
+*.pem
+*.key
+*.cert
+*.crt
+id_rsa*
+*.pfx
+
+# ==========================================
+# Python Bytecode & Environments
+# ==========================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environments
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# ==========================================
+# IDE & System Files
+# ==========================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+desktop.ini

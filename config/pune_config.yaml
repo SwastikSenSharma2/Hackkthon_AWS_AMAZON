@@ -1,0 +1,174 @@
+# ============================================================
+#  ACO Urban Traffic Routing Engine — Configuration
+#  City: Pune, Maharashtra, India
+#  Data window: Jan 2023 CCTV counts (Alankar, Jehangir, RTO Chowk)
+#
+#  This file is the ONLY place you need to change to run the
+#  engine on a different city.  Swap road_network, traffic_clean,
+#  transit_routes, transit_stops, and tune the parameters below.
+# ============================================================
+
+city: "Pune"
+country: "India"
+
+# ----------------------------------------------------------
+# ACO Core Parameters
+# ----------------------------------------------------------
+alpha: 1.0          # pheromone influence weight (τ^α)
+beta: 2.5           # heuristic visibility weight (η^β)
+rho: 0.1            # pheromone evaporation rate per iteration  [0,1]
+q_deposit: 100.0    # base pheromone deposit constant Q
+colony_size: 50     # virtual ants per iteration
+iterations: 100     # total ACO iterations per time-step
+
+# Minimum pheromone floor (prevents total starvation of a path)
+tau_min: 0.001
+# Initial pheromone level on every edge
+tau_init: 1.0
+
+# ----------------------------------------------------------
+# Negative Pheromone (Mutation A)
+# ----------------------------------------------------------
+# Spike formula: neg_spike = neg_scale * max(0, vc_ratio - vc_threshold)^2
+neg_pheromone_scale: 5.0
+vc_threshold: 0.7        # V/C ratio above which negative pheromones activate
+neg_evaporation: 0.15    # negative pheromone evaporates faster than positive
+
+# ----------------------------------------------------------
+# Vehicle Priority Weights W_v  (Mutation B)
+# Priority multiplier applied to negative pheromone PERCEPTION.
+#   W_v < 1  →  vehicle is partially blind to congestion (priority routing)
+#   W_v > 1  →  vehicle is hyper-sensitive to congestion (pushed to periphery)
+# ----------------------------------------------------------
+vehicle_weights:
+  transit_bus:   0.5    # PMPML public bus — maximum priority
+  school_bus:    0.6    # school buses — near-maximum priority
+  car_pool:      1.2    # carpooling (≥3 occupants) — slight advantage
+  car_single:    2.0    # single-occupancy car — heavily penalised
+  motorbike:     1.5    # two-wheelers
+  truck_freight: 5.0    # non-essential heavy freight — maximum penalty
+  truck_essential: 2.5  # essential goods trucks
+
+# ----------------------------------------------------------
+# Passenger Car Equivalents  (IRC 106 : 1990 calibrated)
+# Used to subtract from road capacity when an agent uses an edge.
+# ----------------------------------------------------------
+pce:
+  car:           1.0
+  motorbike:     0.75   # IRC 106 — two-wheeler on mixed urban road
+  bus:           3.0    # standard city bus
+  truck:         3.7    # heavy goods vehicle, IRC 106 calibration
+
+# ----------------------------------------------------------
+# Road Capacity Baseline  (veh / hr / lane, PCE-adjusted)
+# Source: Highway Capacity Manual + IRC 106 Indian urban adjustment
+# ----------------------------------------------------------
+capacity_table:
+  motorway:         2200
+  motorway_link:    1800
+  trunk:            1800
+  trunk_link:       1500
+  primary:          1500
+  primary_link:     1200
+  secondary:        1000
+  secondary_link:    800
+  tertiary:          700
+  tertiary_link:     600
+  unclassified:      500
+  residential:       400
+  living_street:     200
+  service:           200
+  default:           600   # fallback for unknown highway tags
+
+# ----------------------------------------------------------
+# Turn Penalties  (Mutation E — seconds added to travel time)
+# Derived from HCM intersection delay look-up tables.
+# ----------------------------------------------------------
+turn_penalties:
+  straight:              0
+  left_merge:           15    # merge with traffic flowing in same direction
+  right_across_traffic: 45    # cross oncoming lane (India: right-hand traffic)
+  u_turn:               60    # full reversal
+  unknown:              10    # default when geometry is ambiguous
+
+# Angle thresholds (degrees) for turn classification
+turn_angle_thresholds:
+  straight_max:  30     # |bearing change| ≤ 30° → straight
+  right_min:     30     # bearing change > +30° → right turn
+  left_min:     -30     # bearing change < -30° → left turn
+
+# ----------------------------------------------------------
+# Volatile Memoization Cache  (Mutation D)
+# ----------------------------------------------------------
+# Cache is invalidated when the average negative pheromone on
+# any edge of a cached tail exceeds this threshold.
+cache_invalidation_threshold: 1.5
+# Maximum number of node→destination tails to store
+cache_max_size: 10000
+
+# ----------------------------------------------------------
+# Directional Candidate List  (Mutation C)
+# ----------------------------------------------------------
+# An edge is excluded from the candidate list when moving along
+# it increases the straight-line distance to the destination by
+# more than this fraction (e.g. 0.0 = pure forward filter,
+# 0.15 = allow up to 15% detour backward to avoid dead-ends).
+backward_tolerance: 0.05
+
+# ----------------------------------------------------------
+# Temporal Simulation Window
+# ----------------------------------------------------------
+sim_start_hour: 6      # 06:00 local time
+sim_end_hour:   11     # 11:00 local time  (morning rush)
+time_step_minutes: 5   # advance clock in 5-min buckets (matches CCTV data)
+
+# ----------------------------------------------------------
+# Synthetic Agent Generation
+# ----------------------------------------------------------
+n_synthetic_agents: 500          # initial debug / validation count
+random_seed: 42                  # reproducibility
+origin_zone_percentile: 20       # nodes in bottom-20% degree → peripheral origins
+destination_zone_percentile: 80  # nodes in top-80% degree → dense dest
+
+# ----------------------------------------------------------
+# Departure Stagger (Scheduler)
+# ----------------------------------------------------------
+# For groups of buses sharing a common road segment, stagger
+# departure when predicted segment load exceeds this fraction.
+stagger_load_trigger: 0.65       # 65% of segment capacity
+stagger_window_minutes: 20       # spread departures across this window
+
+# ----------------------------------------------------------
+# FastAPI / Streaming
+# ----------------------------------------------------------
+api_host: "0.0.0.0"
+api_port: 8000
+stream_chunk_agents: 50          # agents pushed per SSE chunk
+
+# ----------------------------------------------------------
+# Data Paths  (relative to project root  ACO_Traffic/)
+# ----------------------------------------------------------
+data:
+  road_network:      "DATA/drive-download-20260919T123544Z-1-001/pune_road_network.txt"
+  traffic_clean:     "DATA/drive-download-20260919T123544Z-1-001/pune_traffic_clean.csv"
+  train_dataset:     "DATA/drive-download-20260919T123544Z-1-001/train_dataset.csv"
+  transit_routes:    "DATA/drive-download-20260919T123544Z-1-001/pune_transit_routes.csv"
+  transit_stops:     "DATA/drive-download-20260919T123544Z-1-001/pune_transit_stops.json"
+  intersection_nodes:"DATA/drive-download-20260919T123544Z-1-001/intersection_node_map.json"
+  modal_share:       "DATA/692b7880-1667-4e5e-90a5-df54fa0aa582.csv"
+
+# ----------------------------------------------------------
+# Output Paths
+# ----------------------------------------------------------
+output:
+  processed_dir:     "processed/"
+  results_dir:       "output/"
+  map_html:          "output/pune_pheromone_map.html"
+  routes_json:       "output/routes.json"
+  edge_loads_csv:    "output/edge_loads.csv"
+  transit_schedule:  "output/transit_schedule.csv"
+  agent_matrix:      "processed/agent_matrix.json"
+  diurnal_curve:     "processed/diurnal_curve.json"
+  fleet_dist:        "processed/fleet_distribution.json"
+  transit_agents:    "processed/transit_agents.json"
+  graph_pkl:         "processed/graph.pkl"
