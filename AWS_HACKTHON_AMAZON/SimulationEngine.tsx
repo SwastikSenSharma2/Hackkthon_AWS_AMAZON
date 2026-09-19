@@ -87,13 +87,18 @@ export const SimulationEngine: React.FC<SimulationEngineProps> = ({
 
   const activeTime = timeSteps[selectedTimeIdx];
 
+  // If live backend data is available and simulation is done, prefer it for travel time display
+  const liveAvgSpeedKmh = liveSummary
+    ? Math.round(3600 / Math.max(liveSummary.overall_mean_travel_time_s, 1) * 0.5)
+    : null;
+
   const currentMetrics: SimulationMetrics = isOptimizedActive
     ? {
         congestionPct: selectedTimeIdx === 4 ? 74 : selectedTimeIdx >= 3 ? 68 : 45,
         busDelayMin: selectedTimeIdx === 4 ? 7 : 4,
-        averageSpeedKmh: selectedTimeIdx === 4 ? 19 : 28,
+        averageSpeedKmh: isSimulationDone && liveAvgSpeedKmh ? liveAvgSpeedKmh : (selectedTimeIdx === 4 ? 19 : 28),
         bottlenecksCount: 1,
-        totalNetworkVehicles: Math.round(8420 * (vehicleVolumePct / 80)),
+        totalNetworkVehicles: liveSummary ? liveSummary.n_agents_total : Math.round(8420 * (vehicleVolumePct / 80)),
         avoidedDelayCommuterHours: 4820,
       }
     : {
@@ -101,7 +106,7 @@ export const SimulationEngine: React.FC<SimulationEngineProps> = ({
         busDelayMin: selectedTimeIdx === 4 ? 15 : 9,
         averageSpeedKmh: selectedTimeIdx === 4 ? 13 : 21,
         bottlenecksCount: 7,
-        totalNetworkVehicles: Math.round(8420 * (vehicleVolumePct / 80)),
+        totalNetworkVehicles: liveSummary ? liveSummary.n_agents_total : Math.round(8420 * (vehicleVolumePct / 80)),
         avoidedDelayCommuterHours: 0,
       };
 
@@ -119,7 +124,7 @@ export const SimulationEngine: React.FC<SimulationEngineProps> = ({
         }}
       >
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
             <span
               style={{
                 fontSize: '11px',
@@ -136,6 +141,24 @@ export const SimulationEngine: React.FC<SimulationEngineProps> = ({
             <span style={{ fontSize: '12px', color: '#64748b' }}>
               Scenario: Morning School Traffic (06:30 to 08:00)
             </span>
+            {/* Live backend status indicator */}
+            {backendStatus && (
+              <span
+                style={{
+                  fontSize: '10px',
+                  fontWeight: 600,
+                  padding: '2px 8px',
+                  borderRadius: '999px',
+                  background: backendStatus.graph_loaded ? 'rgba(34,197,94,0.1)' : 'rgba(148,163,184,0.1)',
+                  color: backendStatus.graph_loaded ? '#16a34a' : '#64748b',
+                  border: `1px solid ${backendStatus.graph_loaded ? 'rgba(34,197,94,0.3)' : 'rgba(148,163,184,0.3)'}`,
+                }}
+              >
+                {backendStatus.graph_loaded
+                  ? `Backend Live (${backendStatus.num_nodes.toLocaleString()} nodes)`
+                  : 'Demo Mode'}
+              </span>
+            )}
           </div>
 
           <h1
@@ -541,4 +564,3 @@ export const SimulationEngine: React.FC<SimulationEngineProps> = ({
     </div>
   );
 };
-export default SimulationEngine;
