@@ -52,7 +52,14 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ onBackToDashboard }) =
       </div>
 
       {/* 4 Large Audit Metric Cards */}
-      <div
+      <motion.div
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-40px" }}
+        variants={{
+          hidden: {},
+          visible: { transition: { staggerChildren: 0.1 } }
+        }}
         style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
@@ -60,43 +67,47 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ onBackToDashboard }) =
           marginBottom: '32px',
         }}
       >
-        <div style={{ padding: '20px', borderRadius: '16px', background: 'rgba(255,255,255,0.88)', border: '1px solid rgba(226,232,240,0.8)', boxShadow: '0 4px 16px rgba(15,23,42,0.06)' }}>
+        <motion.div variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5 } } }} style={{ padding: '20px', borderRadius: '16px', background: 'rgba(255,255,255,0.88)', border: '1px solid rgba(226,232,240,0.8)', boxShadow: '0 4px 16px rgba(15,23,42,0.06)' }}>
           <span style={{ fontSize: '11px', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 600 }}>
             TOTAL MONITORED VEHICLES
           </span>
           <p style={{ fontSize: '28px', fontWeight: 800, color: '#0f172a', marginTop: '4px' }}>142,800</p>
           <p style={{ fontSize: '11.5px', color: '#0d9488', marginTop: '2px' }}>Peak morning window analysis</p>
-        </div>
+        </motion.div>
 
-        <div style={{ padding: '20px', borderRadius: '16px', background: 'rgba(240,253,250,0.9)', border: '1px solid rgba(13,148,136,0.2)' }}>
+        <motion.div variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5 } } }} style={{ padding: '20px', borderRadius: '16px', background: 'rgba(240,253,250,0.9)', border: '1px solid rgba(13,148,136,0.2)' }}>
           <span style={{ fontSize: '11px', color: '#0d9488', textTransform: 'uppercase', fontWeight: 600 }}>
             AVOIDED COMMUTER DELAY
           </span>
           <p style={{ fontSize: '28px', fontWeight: 800, color: '#0d9488', marginTop: '4px' }}>4,820 hrs</p>
           <p style={{ fontSize: '11.5px', color: '#0f766e', marginTop: '2px' }}>Saved daily across network</p>
-        </div>
+        </motion.div>
 
-        <div style={{ padding: '20px', borderRadius: '16px', background: 'rgba(255,255,255,0.88)', border: '1px solid rgba(226,232,240,0.8)', boxShadow: '0 4px 16px rgba(15,23,42,0.06)' }}>
+        <motion.div variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5 } } }} style={{ padding: '20px', borderRadius: '16px', background: 'rgba(255,255,255,0.88)', border: '1px solid rgba(226,232,240,0.8)', boxShadow: '0 4px 16px rgba(15,23,42,0.06)' }}>
           <span style={{ fontSize: '11px', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 600 }}>
             PUBLIC BUS ON-TIME RATE
           </span>
           <p style={{ fontSize: '28px', fontWeight: 800, color: '#0f172a', marginTop: '4px' }}>94.2%</p>
           <p style={{ fontSize: '11.5px', color: '#0d9488', marginTop: '2px' }}>Up from 68.4% without priority</p>
-        </div>
+        </motion.div>
 
-        <div style={{ padding: '20px', borderRadius: '16px', background: 'rgba(255,255,255,0.88)', border: '1px solid rgba(226,232,240,0.8)', boxShadow: '0 4px 16px rgba(15,23,42,0.06)' }}>
+        <motion.div variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5 } } }} style={{ padding: '20px', borderRadius: '16px', background: 'rgba(255,255,255,0.88)', border: '1px solid rgba(226,232,240,0.8)', boxShadow: '0 4px 16px rgba(15,23,42,0.06)' }}>
           <span style={{ fontSize: '11px', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 600 }}>
             ESTIMATED CO2 REDUCTION
           </span>
           <p style={{ fontSize: '28px', fontWeight: 800, color: '#0d9488', marginTop: '4px' }}>6,420 kg</p>
           <p style={{ fontSize: '11.5px', color: '#64748b', marginTop: '2px' }}>Reduced idling emissions</p>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
 
       {/* Visual Analytics Sections */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(480px, 1fr))', gap: '24px' }}>
         {/* Corridor Congestion Comparison */}
-        <div
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-40px" }}
+          transition={{ duration: 0.6 }}
           style={{
             padding: '24px',
             borderRadius: '20px',
@@ -130,10 +141,14 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ onBackToDashboard }) =
               </div>
             ))}
           </div>
-        </div>
+        </motion.div>
 
         {/* Modal Split & Fleet Distribution */}
-        <div
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-40px" }}
+          transition={{ duration: 0.6, delay: 0.1 }}
           style={{
             padding: '24px',
             borderRadius: '20px',
@@ -167,7 +182,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ onBackToDashboard }) =
               </div>
             ))}
           </div>
-        </div>
+        </motion.div>
       </div>
     </div>
   );

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { ViewTab, RoadSegment } from './types';
 import { MOCK_ROADS } from './mockData';
 import { Navbar } from './components/Navbar';
@@ -47,6 +48,14 @@ export const App: React.FC = () => {
 
       {/* Main View Router */}
       <main className="flex-1 w-full pt-16">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentTab}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+          >
         {currentTab === 'overview' && (
           <Hero
             onOpenDashboard={() => setCurrentTab('live-traffic')}
@@ -58,7 +67,12 @@ export const App: React.FC = () => {
 
         {currentTab === 'live-traffic' && (
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6"
+            >
               <div>
                 <span className="text-xs font-bold text-teal-600 tracking-wider uppercase">Live Telemetry Feed</span>
                 <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
@@ -69,33 +83,47 @@ export const App: React.FC = () => {
                 </p>
               </div>
               <div className="flex items-center gap-3">
-                <button
+                <motion.button
                   onClick={() => setCurrentTab('optimization')}
+                  whileHover={{ scale: 1.04 }}
+                  whileTap={{ scale: 0.96 }}
                   className="btn-gradient-primary px-4 py-2 text-xs font-semibold flex items-center gap-2"
                 >
                   View Recommendations
-                </button>
-                <button
+                </motion.button>
+                <motion.button
                   onClick={() => setCurrentTab('simulation')}
+                  whileHover={{ scale: 1.04 }}
+                  whileTap={{ scale: 0.96 }}
                   className="px-4 py-2 text-xs font-semibold rounded-full bg-slate-900 text-white hover:bg-slate-800 transition-colors cursor-pointer"
                 >
                   Launch ACO Engine
-                </button>
+                </motion.button>
               </div>
-            </div>
+            </motion.div>
 
             {/* Live Map & Drawer layout */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 min-h-[600px]">
-              <div className="lg:col-span-2 h-[600px]">
+              <motion.div
+                className="lg:col-span-2 h-[600px]"
+                initial={{ opacity: 0, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+              >
                 <TrafficMap
                   roads={MOCK_ROADS}
                   selectedRoadId={selectedRoad?.id || null}
                   onSelectRoad={handleSelectRoad}
                   isOptimizedView={false}
                 />
-              </div>
+              </motion.div>
 
-              <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs flex flex-col justify-between">
+              <motion.div
+                className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs flex flex-col justify-between"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+              >
                 <div>
                   <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
                     <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wide">
@@ -107,9 +135,12 @@ export const App: React.FC = () => {
                   </div>
 
                   <div className="space-y-2.5 max-h-[460px] overflow-y-auto pr-1">
-                    {MOCK_ROADS.map((r) => (
-                      <div
+                    {MOCK_ROADS.map((r, i) => (
+                      <motion.div
                         key={r.id}
+                        initial={{ opacity: 0, x: 12 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.3, delay: 0.35 + i * 0.05 }}
                         onClick={() => handleSelectRoad(r)}
                         className={`p-3 rounded-xl cursor-pointer border transition-all ${
                           selectedRoad?.id === r.id
@@ -136,18 +167,20 @@ export const App: React.FC = () => {
                           <span>Delay: <strong className="text-slate-700">+{r.delayMinutes} min</strong></span>
                           <span>Buses: <strong className="text-slate-700">{r.schoolBusCount}</strong></span>
                         </div>
-                      </div>
+                      </motion.div>
                     ))}
                   </div>
                 </div>
 
-                <button
+                <motion.button
                   onClick={() => setIsDrawerOpen(true)}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                   className="w-full mt-4 py-2.5 text-xs font-semibold rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors cursor-pointer"
                 >
                   Open Corridor Deep Dive
-                </button>
-              </div>
+                </motion.button>
+              </motion.div>
             </div>
           </div>
         )}
@@ -192,6 +225,8 @@ export const App: React.FC = () => {
             />
           </div>
         )}
+          </motion.div>
+        </AnimatePresence>
       </main>
 
       {/* Road Deep Dive Drawer */}

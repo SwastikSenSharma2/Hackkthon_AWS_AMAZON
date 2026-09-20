@@ -1,5 +1,26 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+
+// Count-up hook for animated numbers
+function useCountUp(target: number, duration: number = 1500, delay: number = 600): number {
+  const [value, setValue] = useState(0);
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      const startTime = performance.now();
+      const step = (now: number) => {
+        const elapsed = now - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        // Ease-out cubic
+        const eased = 1 - Math.pow(1 - progress, 3);
+        setValue(Math.round(target * eased));
+        if (progress < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    }, delay);
+    return () => clearTimeout(timeout);
+  }, [target, duration, delay]);
+  return value;
+}
 
 interface HeroProps {
   onOpenDashboard: () => void;
@@ -8,12 +29,29 @@ interface HeroProps {
   onSelectRoad: (roadId: string) => void;
 }
 
+const containerVariants = {
+  hidden: {},
+  visible: {
+    transition: { staggerChildren: 0.12, delayChildren: 0.1 },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 18 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } },
+};
+
 export const Hero: React.FC<HeroProps> = ({
   onOpenDashboard,
   onLaunchFlagshipDemo,
   onOpenBeginnerGuide,
   onSelectRoad,
 }) => {
+  const congestion = useCountUp(68, 1200, 800);
+  const avgSpeed = useCountUp(24, 1200, 900);
+  const vehicles = useCountUp(8420, 1500, 1000);
+  const buses = useCountUp(50, 1000, 1100);
+
   return (
     <section className="relative w-full min-h-[92vh] flex flex-col justify-between overflow-hidden luminous-bg">
       {/* Background Subtle Constellation Network SVG */}
@@ -57,12 +95,15 @@ export const Hero: React.FC<HeroProps> = ({
       </svg>
 
       {/* Hero Content (Left-Anchored Matching Reference Image) */}
-      <div className="relative z-10 pt-28 sm:pt-36 md:pt-40 px-6 sm:px-12 md:px-20 max-w-4xl">
+      <motion.div
+        className="relative z-10 pt-28 sm:pt-36 md:pt-40 px-6 sm:px-12 md:px-20 max-w-4xl"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
         {/* Pre-header: Teal Dash Tag */}
         <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          variants={itemVariants}
           className="flex items-center gap-3"
         >
           <span className="w-6 h-[2px] bg-teal-600 rounded-full" />
@@ -73,9 +114,7 @@ export const Hero: React.FC<HeroProps> = ({
 
         {/* Headline: "Optimize traffic. Not just routes." */}
         <motion.h1
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.15 }}
+          variants={itemVariants}
           className="mt-6 sm:mt-8 font-extrabold text-4xl sm:text-6xl md:text-7xl lg:text-[5.2rem] leading-[1.05] tracking-tight"
           style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
         >
@@ -94,9 +133,7 @@ export const Hero: React.FC<HeroProps> = ({
 
         {/* Subtitle */}
         <motion.p
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.3 }}
+          variants={itemVariants}
           className="mt-6 text-base sm:text-lg text-slate-600 max-w-xl leading-relaxed font-normal"
           style={{ fontFamily: "'Inter', sans-serif" }}
         >
@@ -105,15 +142,13 @@ export const Hero: React.FC<HeroProps> = ({
 
         {/* CTAs: Exact styling from image */}
         <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.45 }}
+          variants={itemVariants}
           className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 mt-8 sm:mt-10"
         >
           {/* Primary Button */}
           <motion.button
             onClick={onOpenDashboard}
-            whileHover={{ scale: 1.03 }}
+            whileHover={{ scale: 1.05, boxShadow: '0 8px 30px rgba(13, 148, 136, 0.35)' }}
             whileTap={{ scale: 0.97 }}
             className="btn-gradient-primary px-8 py-4 rounded-full font-semibold text-sm sm:text-base flex items-center justify-center gap-3 cursor-pointer"
           >
@@ -127,7 +162,7 @@ export const Hero: React.FC<HeroProps> = ({
           {/* Secondary Watch Demo Button */}
           <motion.button
             onClick={onLaunchFlagshipDemo}
-            whileHover={{ scale: 1.04 }}
+            whileHover={{ scale: 1.05, backgroundColor: '#ffffff' }}
             whileTap={{ scale: 0.96 }}
             className="px-6 py-3.5 rounded-full bg-white/70 hover:bg-white border border-slate-200/80 shadow-sm text-slate-700 font-medium text-sm sm:text-base flex items-center justify-center gap-3 cursor-pointer backdrop-blur-md transition-all"
           >
@@ -142,55 +177,69 @@ export const Hero: React.FC<HeroProps> = ({
           {/* Direct Flagship Alert Button */}
           <motion.button
             onClick={() => onSelectRoad('road-varthur')}
-            whileHover={{ scale: 1.02 }}
+            whileHover={{ scale: 1.04 }}
             whileTap={{ scale: 0.98 }}
             className="px-4 py-2 rounded-full bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold flex items-center justify-center gap-2 cursor-pointer"
           >
-            <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
-            <span>Varthur Road (92% Bottleneck)</span>
+            <motion.span
+              className="w-2 h-2 rounded-full bg-rose-500"
+              animate={{ scale: [1, 1.4, 1], opacity: [1, 0.6, 1] }}
+              transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+            />
+            <span>Primary Corridor (92% Bottleneck)</span>
             <span className="underline">Inspect</span>
           </motion.button>
         </motion.div>
-      </div>
+      </motion.div>
 
       {/* Bottom Telemetry Ticker Strip */}
-      <div className="relative z-10 px-6 sm:px-12 md:px-20 py-8">
+      <motion.div
+        className="relative z-10 px-6 sm:px-12 md:px-20 py-8"
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7, delay: 0.7 }}
+      >
         <div className="luminous-card p-4 sm:p-5 rounded-2xl flex items-center justify-between gap-4 overflow-x-auto">
           <div className="flex items-center gap-6 sm:gap-10 min-w-max">
             <div>
               <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider block">Network Congestion</span>
-              <span className="text-base sm:text-lg font-bold text-amber-600">68% <span className="text-xs text-slate-400 font-normal">(+14% Peak)</span></span>
+              <span className="text-base sm:text-lg font-bold text-amber-600">{congestion}% <span className="text-xs text-slate-400 font-normal">(+14% Peak)</span></span>
             </div>
 
             <div className="w-[1px] h-8 bg-slate-200" />
 
             <div>
               <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider block">Average Speed</span>
-              <span className="text-base sm:text-lg font-bold text-teal-700">24 km/h <span className="text-xs text-slate-400 font-normal">(Target 38)</span></span>
+              <span className="text-base sm:text-lg font-bold text-teal-700">{avgSpeed} km/h <span className="text-xs text-slate-400 font-normal">(Target 38)</span></span>
             </div>
 
             <div className="w-[1px] h-8 bg-slate-200" />
 
             <div>
               <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider block">Active Monitored</span>
-              <span className="text-base sm:text-lg font-bold text-slate-800">8,420 Vehicles</span>
+              <span className="text-base sm:text-lg font-bold text-slate-800">{vehicles.toLocaleString()} Vehicles</span>
             </div>
 
             <div className="w-[1px] h-8 bg-slate-200" />
 
             <div>
               <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider block">Pune Transit & School Fleet</span>
-              <span className="text-base sm:text-lg font-bold text-indigo-600">50 Coordinated Buses</span>
+              <span className="text-base sm:text-lg font-bold text-indigo-600">{buses} Coordinated Buses</span>
             </div>
           </div>
 
           <div className="hidden lg:flex items-center gap-2 text-xs font-semibold text-slate-500">
-            <span className="w-2 h-2 rounded-full bg-teal-500 shadow-sm shadow-teal-500/50" />
+            <motion.span
+              className="w-2 h-2 rounded-full bg-teal-500 shadow-sm shadow-teal-500/50"
+              animate={{ scale: [1, 1.3, 1], opacity: [1, 0.7, 1] }}
+              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+            />
             <span>Pune Metropolitan Command Active</span>
           </div>
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 };
 export default Hero;
+

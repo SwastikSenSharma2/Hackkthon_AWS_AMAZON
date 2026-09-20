@@ -80,15 +80,25 @@ export const Navbar: React.FC<NavbarProps> = ({
             {navItems.map((item) => {
               const isActive = currentTab === item.id;
               return (
-                <button
+                <motion.button
                   key={item.id}
                   onClick={() => onSelectTab(item.id)}
-                  className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
+                  whileHover={!isActive ? { scale: 1.05 } : {}}
+                  whileTap={{ scale: 0.95 }}
+                  className={`relative px-3 py-1.5 rounded-full text-xs font-semibold transition-colors cursor-pointer flex items-center gap-1.5 ${
                     isActive
-                      ? 'bg-slate-900 text-white shadow-xs'
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80'
+                      ? 'text-white'
+                      : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
+                  {isActive && (
+                    <motion.div
+                      layoutId="nav-active-pill"
+                      className="absolute inset-0 bg-slate-900 rounded-full shadow-xs"
+                      transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                      style={{ zIndex: -1 }}
+                    />
+                  )}
                   <span>{item.label}</span>
                   {item.badge && (
                     <span
@@ -103,7 +113,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       {item.badge}
                     </span>
                   )}
-                </button>
+                </motion.button>
               );
             })}
           </div>

@@ -279,13 +279,19 @@ export const SimulationEngine: React.FC<SimulationEngineProps> = ({
               </span>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '8px' }}>
+            <motion.div 
+              className="grid grid-cols-5 gap-2"
+              variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.1 } } }}
+              initial="hidden"
+              animate="visible"
+            >
               {processingStages.map((stage, idx) => {
                 const isPast = idx < currentStageIdx;
                 const isCurrent = idx === currentStageIdx;
                 return (
-                  <div
+                  <motion.div
                     key={stage.step}
+                    variants={{ hidden: { opacity: 0, x: -10 }, visible: { opacity: 1, x: 0 } }}
                     style={{
                       padding: '8px 10px',
                       borderRadius: '8px',
@@ -298,18 +304,37 @@ export const SimulationEngine: React.FC<SimulationEngineProps> = ({
                         ? '1px solid #0d9488'
                         : isPast
                         ? '1px solid rgba(13,148,136,0.25)'
-                        : '1px solid rgba(226,232,240,0.8)',
-                      fontSize: '11px',
-                      color: isCurrent ? '#0d9488' : isPast ? '#0f766e' : '#94a3b8',
-                      fontWeight: isCurrent ? 700 : 500,
+                        : '1px solid transparent',
+                      opacity: isPast || isCurrent ? 1 : 0.5,
+                      transition: 'all 0.3s ease',
+                      position: 'relative',
+                      overflow: 'hidden',
                     }}
                   >
-                    <div>{isPast ? 'Done' : `${stage.step}.`}</div>
-                    <div style={{ marginTop: '2px', lineHeight: 1.2 }}>{stage.label.split(' ')[0]} {stage.label.split(' ')[1]}</div>
-                  </div>
+                    {isCurrent && (
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: '100%' }}
+                        transition={{ duration: processingStages[currentStageIdx].duration / 1000, ease: 'linear' }}
+                        style={{
+                          position: 'absolute',
+                          bottom: 0,
+                          left: 0,
+                          height: '2px',
+                          background: '#0d9488',
+                        }}
+                      />
+                    )}
+                    <span style={{ display: 'block', fontSize: '10px', fontWeight: 800, color: isCurrent ? '#0d9488' : isPast ? '#0f766e' : '#94a3b8', marginBottom: '2px' }}>
+                      PHASE {stage.step}
+                    </span>
+                    <span style={{ display: 'block', fontSize: '10.5px', color: isCurrent ? '#0f172a' : '#64748b', lineHeight: 1.3, fontWeight: isCurrent ? 600 : 500 }}>
+                      {stage.label}
+                    </span>
+                  </motion.div>
                 );
               })}
-            </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>

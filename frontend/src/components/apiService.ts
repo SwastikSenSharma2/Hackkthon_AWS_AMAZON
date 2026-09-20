@@ -152,4 +152,62 @@ export const apiService = {
       return () => {};
     }
   },
+
+  /**
+   * Poll simulation status by job ID
+   */
+  async pollSimulationStatus(jobId: string): Promise<{ job_id: string; status: string; summary?: any; error?: string } | null> {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/v1/simulation/status/${jobId}`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return await res.json();
+    } catch (err) {
+      console.warn('FastAPI backend not reachable at /api/v1/simulation/status:', err);
+      return null;
+    }
+  },
+
+  /**
+   * Get paginated route results
+   */
+  async getRoutes(page: number = 1, page_size: number = 50, vehicleClass?: string): Promise<any | null> {
+    try {
+      let url = `${API_BASE_URL}/api/v1/results/routes?page=${page}&page_size=${page_size}`;
+      if (vehicleClass) url += `&vehicle_class=${vehicleClass}`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return await res.json();
+    } catch (err) {
+      console.warn('FastAPI backend not reachable at /api/v1/results/routes:', err);
+      return null;
+    }
+  },
+
+  /**
+   * Get the road network graph
+   */
+  async getNetworkGraph(max_nodes: number = 2000): Promise<any | null> {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/v1/network/graph?max_nodes=${max_nodes}`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return await res.json();
+    } catch (err) {
+      console.warn('FastAPI backend not reachable at /api/v1/network/graph:', err);
+      return null;
+    }
+  },
+
+  /**
+   * Get pheromone snapshot
+   */
+  async getPheromones(top_n: number = 200): Promise<GeoJsonFeatureCollection | null> {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/v1/network/pheromones?top_n=${top_n}`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return await res.json();
+    } catch (err) {
+      console.warn('FastAPI backend not reachable at /api/v1/network/pheromones:', err);
+      return null;
+    }
+  }
 };

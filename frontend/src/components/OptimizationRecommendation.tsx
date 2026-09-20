@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { OPTIMIZATION_PILLARS, BEFORE_AFTER_DATA } from '../mockData';
 
@@ -65,9 +65,10 @@ export const OptimizationRecommendation: React.FC<OptimizationRecommendationProp
           {OPTIMIZATION_PILLARS.map((pillar, idx) => (
             <motion.div
               key={pillar.id}
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: idx * 0.1 }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-40px" }}
+              transition={{ duration: 0.5, delay: idx * 0.1 }}
               className="luminous-card p-6 rounded-2xl flex flex-col justify-between"
             >
               <div>
@@ -117,7 +118,13 @@ export const OptimizationRecommendation: React.FC<OptimizationRecommendationProp
       </div>
 
       {/* Side-by-Side Before vs After Preview */}
-      <div className="luminous-card p-6 sm:p-8 rounded-3xl mb-8">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-40px" }}
+        transition={{ duration: 0.6 }}
+        className="luminous-card p-6 sm:p-8 rounded-3xl mb-8"
+      >
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
           <div>
             <h3 className="text-lg font-bold text-slate-900">Projected Network Transformation</h3>
@@ -165,7 +172,7 @@ export const OptimizationRecommendation: React.FC<OptimizationRecommendationProp
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Footer Actions */}
       <div className="flex items-center justify-end gap-3">
