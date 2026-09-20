@@ -124,11 +124,22 @@ python visualizer/map_renderer.py
 # Opens output/pune_pheromone_map.html in your browser
 ```
 
-### Step 5: Start the API (for Next.js frontend)
+### Step 5: Start the API (for Frontend Dashboard)
 
 ```bash
 uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload
 # Swagger UI: http://localhost:8000/api/docs
+```
+
+### Step 6: Start the Frontend Dashboard (React / Vite)
+
+The project includes a premium, interactive React-based web dashboard to visualize the optimization results and live demo fallbacks using `framer-motion` and `vite`.
+
+```bash
+cd frontend
+npm install
+npm run dev
+# The dashboard will be available at http://localhost:5173
 ```
 
 ---
