@@ -24,10 +24,10 @@ export const TrafficMap: React.FC<TrafficMapProps> = ({
   const [activeLayer, setActiveLayer] = useState<'all' | 'school' | 'freight' | 'public'>('all');
 
   const getStatusColor = (status: TrafficStatus, isOptimized: boolean, roadId: string) => {
-    if (isOptimized && roadId === 'road-varthur') {
+    if (isOptimized && (roadId === 'road-varthur' || roadId === 'road-hinjawadi')) {
       return '#d97706'; // Amber moderate
     }
-    if (isOptimized && roadId === 'road-gunjur') {
+    if (isOptimized && (roadId === 'road-gunjur' || roadId === 'road-baner')) {
       return '#059669'; // Teal/emerald
     }
     switch (status) {
